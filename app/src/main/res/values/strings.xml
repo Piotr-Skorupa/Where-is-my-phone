@@ -3,5 +3,7 @@
     <string name="title_home">Home</string>
     <string name="title_conf">Configuration</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_activity_conf">ConfActivity</string>
+    <string name="title_activity_conf">Configuration</string>
+    <string name="button_save">Save</string>
+    <string name="button_test">Test</string>
 </resources>
