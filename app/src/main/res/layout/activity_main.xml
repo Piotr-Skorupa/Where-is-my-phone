@@ -8,6 +8,9 @@
     android:orientation="vertical"
     tools:context="com.example.piotrskorupa.whereismyphone.MainActivity">
 
+
+
+
     <FrameLayout
         android:id="@+id/content"
         android:layout_width="match_parent"
@@ -24,6 +27,17 @@
             android:layout_marginRight="@dimen/activity_horizontal_margin"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="Start" />
+
+        <Button
+            android:id="@+id/map_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_marginTop="70dp"
+            android:text="Show phone location" />
+
+
 
     </FrameLayout>
 

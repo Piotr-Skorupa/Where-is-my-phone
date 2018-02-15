@@ -2,6 +2,7 @@ package com.example.piotrskorupa.whereismyphone;
 
 import android.content.Intent;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private static int NOT_RUNNING = 1;
     private static int RUNNING = 2;
     private Button mStartButton;
+    private Button mMapButton;
     private int status;
 
 
@@ -31,10 +33,11 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_dashboard:
                     runConf();
-                    //mTextMessage.setText(R.string.title_dashboard);
+
                     return true;
                 case R.id.navigation_notifications:
-                    //mTextMessage.setText(R.string.title_notifications);
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://signomix.signocom.com/help/wimp/index.html?language=en"));
+                    startActivity(browserIntent);
                     return true;
             }
             return false;
@@ -54,6 +57,19 @@ public class MainActivity extends AppCompatActivity {
 
         mStartButton = (Button) findViewById(R.id.start_button);
         updateButton();
+
+        mMapButton = (Button) findViewById(R.id.map_button);
+
+        mMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // start map activity
+                Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+                startActivity(intent);
+
+            }
+        });
 
         //mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
