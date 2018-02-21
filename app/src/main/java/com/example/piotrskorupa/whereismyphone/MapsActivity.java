@@ -1,18 +1,33 @@
 package com.example.piotrskorupa.whereismyphone;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,14 +52,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     LocationRequest mLocationRequest;
-    Marker mCurrLocationMarker;
 
+    //location variables
+    private double latitude = 0.0; // latitude (-90 to +90)
+    private double longitude = 0.0; // longitude (-180 to +180)
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //checkLocationPermission();
@@ -54,9 +72,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
 
         mapFragment.getMapAsync(this);
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
-
-
 
     /**
      * Manipulates the map once available.
@@ -71,40 +90,65 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                //buildGoogleApiClient();
-                mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(true);
+        LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            mLastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            if (mLastLocation != null)
+            {
+                latitude = mLastLocation.getLatitude();
+                longitude = mLastLocation.getLongitude();
+
+
             }
-        }
-        else {
-            //buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
 
         }
+        mLastLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-        //Geocoder geocoder = new Geocoder(this);
+        if (mLastLocation != null)
+        {
+            latitude = mLastLocation.getLatitude();
+            longitude = mLastLocation.getLongitude();
 
-        // Add a marker in Sydney and move the camera
-        //Address adres;
-       // LatLng localization;
-        //try {
-          //  mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-           // adres = (Address) geocoder.getFromLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude(), 1);
-           // localization = new LatLng(adres.getLatitude(), adres.getLongitude());
 
-           // mMap.addMarker(new MarkerOptions().position(localization).title("My Location!"));
-           // mMap.moveCamera(CameraUpdateFactory.newLatLng(localization));
-       // } catch (IOException e) {
-         //   e.printStackTrace();
-        //}
+        }
 
+        return;
 
     }
 
 
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    Intent main = new Intent(MapsActivity.this, MainActivity.class);
+                    main.putExtra("ltl", latitude);
+                    main.putExtra("ltn", longitude);
+                    setResult(RESULT_OK,main);
+                    finish();
+                    //MapsActivity.this.startActivity(main);
+                    return true;
+                case R.id.navigation_dashboard:
+                    Intent config = new Intent(MapsActivity.this, ConfActivity.class);
+                    MapsActivity.this.startActivity(config);
+
+                    return true;
+                case R.id.navigation_notifications:
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://signomix.signocom.com/help/wimp/index.html?language=en"));
+                    startActivity(browserIntent);
+                    return true;
+            }
+            return false;
+        }
+
+    };
 
     @Override
     public void onLocationChanged(Location location) {
@@ -150,4 +194,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(ConnectionResult connectionResult) {
 
     }
+
+
 }

@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     public static int NOT_REGISTERED = 0;
@@ -20,6 +21,12 @@ public class MainActivity extends AppCompatActivity {
     private Button mStartButton;
     private Button mMapButton;
     private int status;
+
+    //location variables
+    private double mLocationLatitude = 0.0; // latitude (-90 to +90)
+    private double mLocationLongitude = 0.0; // longitude (-180 to +180)
+
+    private final int myCode = 1;
 
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -65,8 +72,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // start map activity
+
                 Intent intent = new Intent(MainActivity.this, MapsActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, myCode);
+
 
             }
         });
@@ -91,6 +100,21 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onActivityResult (int requestCode, int resultCode, Intent data)
+    {
+        if(requestCode == myCode)
+        {
+            if(resultCode == RESULT_OK)
+            {
+                mLocationLatitude = data.getDoubleExtra("ltl", 0.0);
+                mLocationLongitude = data.getDoubleExtra("ltn", 0.0);
+
+                Toast.makeText(this, "Location: " +mLocationLatitude + " " + mLocationLongitude, Toast.LENGTH_SHORT ).show();
+            }
+        }
     }
 
     protected void updateButton(){
@@ -121,12 +145,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void run(){
+
         status = 2;
         updateButton();
+        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+        startActivityForResult(intent, myCode);
+
+
     }
     protected void stop(){
         status = 1;
         updateButton();
     }
+
+
 
 }

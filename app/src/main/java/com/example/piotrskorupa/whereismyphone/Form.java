@@ -9,7 +9,7 @@ public class Form {
     private String login;
     private String password;
     private String eui;
-    private String interval;
+    private int interval;
     private String secret;
 
     private static Form INSTANCE;
@@ -18,7 +18,7 @@ public class Form {
         login = "";
         password = "";
         eui = "";
-        interval = "";
+        interval = 1000;
         secret = "";
     }
 
@@ -42,7 +42,7 @@ public class Form {
         return eui;
     }
 
-    public String getInterval(){
+    public int getInterval(){
         return interval;
     }
 
@@ -65,7 +65,7 @@ public class Form {
         eui = text;
     }
 
-    public void setInterval(String text)
+    public void setInterval(int text)
     {
         interval = text;
     }

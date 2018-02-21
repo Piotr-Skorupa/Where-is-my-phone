@@ -1,6 +1,8 @@
 package com.example.piotrskorupa.whereismyphone;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +30,10 @@ public class ConfActivity extends AppCompatActivity {
     private Button testButton;
     private ImageButton helpButton;
 
+    private boolean isActive;
+    private boolean isRegistred;
+    SharedPreferences sharedPref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +41,8 @@ public class ConfActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        isActive = false;
+        isRegistred = false;
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // input text fields
@@ -43,6 +51,22 @@ public class ConfActivity extends AppCompatActivity {
         euiText = (EditText) findViewById(R.id.eui);
         intervalText = (EditText) findViewById(R.id.interval);
         secretText = (EditText) findViewById(R.id.secret);
+        // get saved form
+        sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        form.setLogin(sharedPref.getString("login", ""));
+        form.setPassword(sharedPref.getString("pass", ""));
+        form.setEui(sharedPref.getString("eui", ""));
+        form.setInterval(sharedPref.getInt("interval", 1000));
+        form.setSecret(sharedPref.getString("secret", ""));
+
+        // set text when activity start
+        loginText.setText(form.getLogin());
+        passText.setText(form.getPassword());
+        euiText.setText(form.getEui());
+        intervalText.setText(String.valueOf(form.getInterval()));
+        secretText.setText(form.getSecret());
+
+
         // buttons
         saveButton1 = (Button) findViewById(R.id.button_save);
         saveButton2 = (Button) findViewById(R.id.button_save2);
@@ -54,7 +78,11 @@ public class ConfActivity extends AppCompatActivity {
             public void onClick(View view) {
                 form.setLogin(loginText.getText().toString());
                 form.setPassword(passText.getText().toString());
-                Toast.makeText(ConfActivity.this, form.getLogin(), Toast.LENGTH_LONG).show();
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("login", loginText.getText().toString());
+                editor.putString("pass", passText.getText().toString());
+                editor.commit();
+                Toast.makeText(ConfActivity.this, "Data has been saved.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -62,8 +90,14 @@ public class ConfActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 form.setEui(euiText.getText().toString());
-                form.setInterval(intervalText.getText().toString());
-                Toast.makeText(ConfActivity.this, form.getEui(), Toast.LENGTH_LONG).show();
+                form.setInterval(Integer.parseInt(intervalText.getText().toString()));
+                form.setSecret(secretText.getText().toString());
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString("eui", euiText.getText().toString());
+                editor.putInt("interval", Integer.parseInt(intervalText.getText().toString()));
+                editor.putString("secret", secretText.getText().toString());
+                editor.commit();
+                Toast.makeText(ConfActivity.this, "Data has been saved.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -84,6 +118,7 @@ public class ConfActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 //TODO: testing func
+                new HttpClient().execute();
 
             }
         });
